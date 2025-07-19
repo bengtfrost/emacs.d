@@ -1,0 +1,1 @@
+("~/Utveckling/Web3/TON/my_first_contract/" "~/.code/book/" "~/.code/aichat-custom/")

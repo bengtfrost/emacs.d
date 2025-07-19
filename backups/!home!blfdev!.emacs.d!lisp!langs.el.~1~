@@ -1,0 +1,182 @@
+;; -*- lexical-binding: t; -*-
+
+;; --- LSP (Language Server Protocol) Integration ---
+;; lsp-mode is the core client for all language servers.
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :init
+  ;; Sets the prefix for LSP-related commands (e.g., C-c l a for code actions)
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (setq lsp-format-on-save-mode t
+        lsp-format-on-save-allow-no-action t))
+
+;; --- LSP UI for a prettier experience ---
+;; Provides pop-up documentation, diagnostics on the side, etc.
+(use-package lsp-ui
+  :ensure t
+  :after lsp-mode
+  :commands lsp-ui-mode
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  ;; This prevents lsp-ui's code action menu from clashing
+  ;; with minibuffer completion UIs like Vertico. Let Vertico handle it.
+  (setq lsp-ui-sideline-show-code-actions nil))
+
+;; Ensure Emacs knows where to find guile-lsp-server from Guix
+(add-to-list 'exec-path (expand-file-name "~/.guix-profile/bin"))
+
+;; --- Autocompletion Engine ---
+(use-package company
+  :ensure t
+  :hook (after-init . global-company-mode)
+  :config
+  (setq company-idle-delay 0.2)
+  ;; Make Tab complete if a suggestion is available, otherwise indent the line.
+  (define-key company-mode-map (kbd "<tab>") #'blfdev/smart-tab)
+  (define-key company-mode-map (kbd "TAB") #'blfdev/smart-tab))
+
+;; --- Treesitter for better syntax highlighting ---
+;; Emacs 29+ has this built-in. This ensures it's configured and modes are installed.
+(use-package treesit-auto
+  :ensure t
+  :config
+  (global-treesit-auto-mode))
+
+;; --- Language-specific setup ---
+;; lsp-mode will automatically detect and start most servers from your PATH.
+;; We just need to ensure the major modes are installed and hooks are set up.
+
+;; Rust
+(use-package rust-mode
+  :ensure t
+  :config
+  ;; Tell lsp-mode to prefer rust-analyzer for TOML files
+  ;; when in a rust project. This solves the conflict with taplo for Cargo.toml.
+  (setq lsp-toml-server 'rust-analyzer)
+  (add-hook 'rust-mode-hook #'lsp-deferred))
+
+;; --- Python with Ruff LSP ---
+
+;; Configure python-mode itself. This is simple and just adds the hook.
+(use-package python-mode
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook #'lsp-deferred))
+
+;; --- LSP Client Registrations (Executed AFTER lsp-mode is loaded) ---
+(eval-after-load 'lsp-mode
+  '(progn
+     ;; -- General LSP Configuration --
+     ;; Teach lsp-mode that the major-mode 'scheme-mode' corresponds to the
+     ;; languageId 'scheme', which the server understands.
+     (add-to-list 'lsp-language-id-configuration '(scheme-mode . "scheme"))
+
+     ;; -- Python / Ruff Client --
+     (lsp-register-client
+      (make-lsp-client :new-connection (lsp-stdio-connection '("ruff-lsp"))
+                       :major-modes '(python-mode)
+                       :remote? nil
+                       :server-id 'ruff-lsp))
+
+     ;; -- Guile/Scheme Client (Guix) --
+     ;; Register guile-lsp-server from Guix
+     (lsp-register-client
+      (make-lsp-client
+       :new-connection (lsp-stdio-connection '("guile-lsp-server"))
+       :major-modes '(scheme-mode)
+       :priority -1
+       :server-id 'guile-lsp))))
+
+;; C/C++ (uses built-in modes)
+(add-hook 'c-mode-hook #'lsp-deferred)
+(add-hook 'c++-mode-hook #'lsp-deferred)
+
+;; Typescript/JS
+(use-package typescript-mode
+  :ensure t
+  :mode ("\\.ts\\'" "\\.tsx\\'")
+  :config
+  (add-hook 'typescript-mode-hook #'lsp-deferred))
+
+;; Web (for JS, JSON, etc. - provides basic syntax)
+(use-package web-mode
+  :ensure t
+  :mode ("\\.js\\'" "\\.jsx\\'" "\\.json\\'"))
+
+;; Markdown
+(use-package markdown-mode
+  :ensure t
+  :mode ("\\.md\\'" . gfm-mode)
+  :config
+  (add-hook 'markdown-mode-hook #'lsp-deferred))
+
+;; --- TOML ---
+(use-package toml-mode
+  :ensure t
+  :mode ("\\.toml\\'" . toml-mode)
+  :config
+  (add-hook 'toml-mode-hook #'lsp-deferred))
+
+;; --- YAML ---
+(use-package yaml-mode
+  :ensure t
+  :mode (("\\.ya?ml\\'" . yaml-mode))
+  :config
+  (add-hook 'yaml-mode-hook #'lsp-deferred))
+
+;; --- Shell Scripts (Bash, Zsh, etc.) ---
+;; sh-mode is built-in. This configuration ensures that common shell
+;; config files are recognized and that LSP is activated.
+(use-package sh-mode
+  :mode (("\\.sh\\'" . sh-mode)
+         ("\\.zshrc\\'" . sh-mode)
+         ("\\.bashrc\\'" . sh-mode)
+         ("\\.profile\\'" . sh-mode))
+  :config
+  (add-hook 'sh-mode-hook #'lsp-deferred))
+
+;; --- Guix System Integration ---
+(use-package guix
+  :ensure t
+  :defer t) ; Defer loading until a guix command is used
+
+;; --- Guile/Scheme Development (The Final, Robust Configuration) ---
+
+;; 1. First, ensure the guile-specific extension for geiser is available.
+(use-package geiser-guile
+  :ensure t)
+
+;; 2. Now, configure the main geiser package.
+(use-package geiser
+  :ensure t
+  :after geiser-guile ; Ensure guile-specifics are loaded first.
+  :config
+  ;; This :config block ONLY runs AFTER geiser is fully loaded.
+  ;; This is the SAFE place to use geiser's functions.
+  (setq geiser-active-implementations '(guile))
+
+  ;; We now add the hook from a place where we KNOW geiser-mode-enable exists.
+  (add-hook 'scheme-mode-hook #'geiser-mode-enable))
+
+
+;; 3. Separately, add the LSP hook. This is safe because lsp-deferred
+;; is designed to be called at any time.
+(add-hook 'scheme-mode-hook #'lsp-deferred)
+
+;; --- Project Management ---
+;; Projectile helps manage project-specific tasks.
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-mode +1)
+  ;; Define project-specific leader keys here, after projectile is loaded.
+  (general-define-key
+   :keymaps 'global
+   "SPC p f" '(projectile-find-file :which-key "Find File in Project")
+   "SPC p p" '(projectile-switch-project :which-key "Switch Project")
+   "SPC p s" '(projectile-save-project-buffers :which-key "Save Project Buffers"))
+
+  ;; The default Emacs-style binding is C-c p
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))

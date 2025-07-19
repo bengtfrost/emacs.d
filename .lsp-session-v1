@@ -1,0 +1,1 @@
+#s(lsp-session ("/home/blfdev/.code/book" "/home/blfdev/.code/aichat-custom" "/home/blfdev/Hämtningar/Devuan/GuileGuix") ("~/.local/bin/") #s(hash-table test equal) #s(hash-table test equal) #s(hash-table test equal))

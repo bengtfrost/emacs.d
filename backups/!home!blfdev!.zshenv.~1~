@@ -1,0 +1,43 @@
+# ~/.zshenv
+
+# --- Guix Configuration (Safe Version for Host System Integration) ---
+#
+# Do NOT source the default profile script, as it prepends paths and
+# breaks host toolchains (like rustup).
+# Instead, we will manually append the necessary paths.
+
+# Point to the user's default package profile.
+GUIX_PROFILE="$HOME/.guix-profile"
+
+# 1. PATH: Add Guix executables to the END of your PATH.
+#    This ensures system tools (/usr/bin/ld) are found before Guix tools.
+export PATH="$PATH:$GUIX_PROFILE/bin"
+
+# 2. LIBRARY PATH: Needed for Guix apps to find their libraries.
+#    We append here as well.
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$GUIX_PROFILE/lib"
+
+# 3. OTHER PATHS: For man pages, documentation, etc.
+export MANPATH="${MANPATH:+$MANPATH:}$GUIX_PROFILE/share/man"
+export INFOPATH="${INFOPATH:+$INFOPATH:}$GUIX_PROFILE/share/info"
+export PKG_CONFIG_PATH="${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}$GUIX_PROFILE/lib/pkgconfig"
+
+# 4. LOCALE: Set locale for Guix packages. This will now point to the correct place.
+export GUIX_LOCPATH="$GUIX_PROFILE/lib/locale"
+
+# --- End of Guix Configuration ---
+
+
+# Keep your custom paths at the FRONT for highest priority
+export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$HOME/.cargo/bin:$PATH"
+
+# Your other variables are fine
+export BROWSER="firefox"
+export EDITOR="emacs"
+export TERMINAL="alacritty"
+export GIT_TERMINAL_PROMPT=1
+
+# CRITICAL: Ensure CC and CXX are NOT set globally.
+# Comment out or remove these lines if they exist anywhere in your shell startup files.
+# export CC="$HOME/.guix-profile/bin/gcc"
+# export CXX="$HOME/.guix-profile/bin/g++"

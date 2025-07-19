@@ -1,0 +1,266 @@
+# Install with lvm encryption,
+# remove logical volume swap and root,
+# create new logical volume swap and root,
+# create swap and ext4 file systems (also / mountpoint)
+
+# /efi or /boot/efi (still popular) (mount): 
+# boot loader here
+sudo ls -al /boot/efi/EFI/grub/
+total 233
+drwxr-xr-x    2 root     root           512 Jan 19 18:13 .
+drwxr-xr-x    4 root     root           512 Jan 19 18:13 ..
+-rwxr-xr-x    1 root     root        237568 Jan 19 19:44 grubx64.efi
+
+# /boot (mount): 
+# additional kernel(s) and initramf(s) here
+
+NAME                      MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINTS
+sda                         8:0    0 465,8G  0 disk  
+├─sda1                      8:1    0   512M  0 part  /boot/efi
+├─sda2                      8:2    0   488M  0 part  /boot
+└─sda3                      8:3    0 464,8G  0 part  
+  └─sda3_crypt            254:0    0 464,8G  0 crypt 
+    ├─debian--bf--vg-swap 254:1    0   3,7G  0 lvm   [SWAP]
+    └─debian--bf--vg-root 254:2    0   461G  0 lvm   /
+sdb                         8:16   1  28,6G  0 disk  
+└─sdb1                      8:17   1  28,6G  0 part
+
+Bootmgr -> Kernel [-> Initramfs] -> Init system (services)
+
+# wpa_passphrase MYSSID passphrase
+# wpa_supplicant -B -i <interface> -c <(wpa_passphrase MYSSID passphrase)
+# wpa_passphrase MYSSID passphrase > /etc/wpa_supplicant.conf # as root
+# sudo wpa_supplicant -B -i <interface> -c /etc/wpa_supplicant/wpa_supplicant.conf
+# sudo /sbin/dhclient
+
+# Remove cleartext password line from /etc/wpa_supplicant/wpa_supplicant.conf
+# and /etc/network/interfaces
+# Change nameserver(s)
+# /etc/dhcp/dhclient.conf - connman instead
+# supersede domain-name-servers 9.9.9.9, 149.112.112.112;
+
+# sudo apt install rfkill # connman
+# sudo rfkill unblock all
+# See for info: sudo journalctl -b
+# sudo systemctl list-units | grep -iE '(wicd|conn|net|dhcp|wpa)'
+# sudo systemctl stop isc-dhcp-server.service
+
+# Bluetooth soft blocked after reboot
+[I] ➜ sudo rfkill unblock all
+[sudo] lösenord för debubf: 
+~ took 9s 
+[I] ➜ sudo rfkill list                     
+0: phy0: Wireless LAN
+	Soft blocked: no
+	Hard blocked: no
+1: hci0: Bluetooth
+	Soft blocked: no
+	Hard blocked: no
+
+# wifi scan
+/sbin/iwlist wlp2s0 scanning
+
+# wpa_supplicant.conf without wpa_passphrase  
+# see above also - /etc/network/interfaces
+network={
+        ssid="City of Malmo"
+        key_mgmt=NONE
+}
+
+# see directory ../Network/NetworkManager/ 
+# sudo apt install network-manager-gnome
+nmcli device wifi list
+nmcli con show
+sudo nmcli device wifi connect <SSID> password <password>
+
+GNU Binutils: The GNU Binutils are a collection of binary tools: 
+* ld - the GNU linker * as - the GNU assembler * ar - A utility for creating, 
+modifying and extracting from archives * gold - A new, faster, ELF only linker, 
+still in beta test
+
+Toolchain: gcc,g++, include and share directory content
+
+# Transport GPG keys and import SSH keys 
+# (see # ~/Dokument/linux/Devuan/GnuPG-OpenSSH/)
+
+# Change grub boot resolution - xorg started
+# xrandr
+# sudo vim /etc/default/grub
+# sudo update-grub
+
+sudo apt install emacs-nox wget curl alacritty
+sudo apt install fonts-croscore pass qbittorrent
+sudo apt install ffmpeg mpv lshw keychain tmux
+sudo apt install zsh zsh-autosuggestions zsh-syntax-highlighting
+sudo apt install nmap wireshark
+sudo usermod -aG wireshark $USER
+
+# --- Guix --- #
+sudo apt install guix
+Installerar:
+  guix
+
+Installerar beroenden:
+  guile-3.0             guile-ssh           libhttp-parser2.9  libsqlite3-dev
+  guile-avahi           guile-zlib          liblz-dev          libssh-dev
+  guile-bytestructures  guile-zstd          liblz1             libssh2-1-dev
+  guile-gcrypt          libgcrypt20-dev     libmbedtls-dev     libzstd-dev
+  guile-git             libgit2-1.9         libmbedtls21       nscd
+  guile-gnutls          libgit2-dev         libmbedx509-7      zlib1g-dev
+  guile-json            libgpg-error-dev    libpcre2-32-0
+  guile-lzlib           libguile-ssh18      libpcre2-dev
+  guile-sqlite3         libhttp-parser-dev  libpcre2-posix3
+
+Föreslagna paket:
+  guile-3.0-doc  libgcrypt20-doc  sqlite3-doc
+  libgcrypt-bin  libmbedtls-doc   libssh-doc
+# For a complete development environment that includes the GNU Build System,
+# a debugger, assembler and texinfo (GNU documentation system)
+guix install gcc-toolchain autoconf automake make pkg-config gdb texinfo
+# sudo apt install build-essential gdb  
+# sudo apt install strace ltrace
+# sudo apt install ghex nasm
+# sudo apt install python3-pip python3-venv - alt. Mamba package manager
+# --- #
+
+# Virtualization
+sudo apt install qemu-utils qemu-system-x86 qemu-system-gui
+sudo usermod -aG kvm $USER
+
+# Alt.
+# sudo apt install qemu-system-x86 libvirt0 virt-manager
+# sudo adduser $USER libvirt
+# sudo adduser $USER libvirt-qemu
+
+# install remmina remote desktop client
+# sudo apt install remmina
+
+# Docker install 
+# sudo apt install docker.io docker-compose docker-doc # docker-registry
+# see https://docs.docker.com/engine/install/debian/
+# sudo usermod -aG docker $USER
+# sudo usermod -aG docker-registry $USER
+# Alt. https://docs.docker.com/engine/install/debian/
+
+# Set default apps
+sudo update-alternatives --config editor
+sudo update-alternatives --config x-terminal-emulator
+# sudo update-alternatives --config x-www-browser 
+
+# If Broadcom wifi drivers - see doc:
+sudo lshw -C network
+
+# Nerd fonts 
+Download from https://www.nerdfonts.com/font-downloads
+mkdir CascadiaMonoNF
+sudo chown -R root:root CascadiaMonoNF
+sudo chmod -R 755 CascadiaMonoNF
+sudo mv CascadiaMonoNF /usr/share/fonts/truetype/
+# alt. create $HOME/.local/share/fonts and move fonts here
+
+# uv package and project manager
+➜ curl -LsSf https://astral.sh/uv/install.sh | sh
+downloading uv 0.7.20 x86_64-unknown-linux-gnu
+no checksums to verify
+installing to /home/blfdev/.local/bin
+  uv
+  uvx
+everything's installed!
+
+# If installed via the standalone installer, uv can update itself to the latest
+# version:
+uv self update
+
+# node and npm
+sudo apt install nodejs npm
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+# gh shell
+# 1. Add the GitHub CLI GPG key
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | \
+  sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+
+# 2. Add the GitHub CLI repo
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] \
+  https://cli.github.com/packages stable main" | \
+  sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+
+# 3. Update and install
+sudo apt update
+sudo apt install gh
+gh auth login
+
+# Install the necessary language servers, formatters, and linters
+sudo apt install shellcheck shfmt
+uv tool install ruff-lsp
+
+npm install -g \
+  typescript-language-server \
+  typescript \
+  vscode-json-languageserver \
+  yaml-language-server \
+  bash-language-server \
+which ruff-lsp
+which bash-language-server
+which dprint # dprint install via cargo
+
+https://github.com/artempyanykh/marksman/releases
+wget https://github.com/artempyanykh/marksman/releases/download/2024-12-18/marksman-linux-x64
+mv marksman-linux-x64 marksman && chmod +x marksman
+mv marksman ~/.local/bin/
+
+sudo apt install clangd
+
+# Find search
+sudo find / -name <name>
+
+# See WM_CLASS 
+xprop
+
+# se xfonts
+xfontsel
+
+# Check if local time (see file: Fixing incorrect clock time...)
+# - default
+# sudo timedatectl set-local-rtc 1
+# sudo timedatectl status
+...
+
+# Extract multiple compressed files
+for *.tar.gz
+
+for file in *.tar.gz; do tar -zxf $file; done
+
+for *.tar.bz2
+
+for file in *.tar.bz2; do tar -xf $file; done
+
+for *.tar.xz
+
+for file in *.tar.xz; do tar -Jxf $file; done
+
+### Change passphrase/password ###
+
+# LUKS:
+sudo cat /etc/crypttab
+sudo fdisk -l /dev/sda
+sudo cryptsetup luksDump /dev/sda3
+# change passphrase and test
+sudo cryptsetup luksChangeKey /dev/sda3 -S 0
+sudo cryptsetup --verbose open --test-passphrase /dev/sda3
+
+# SSH
+ssh-keygen -p -f /home/debf/.ssh/id_ecdsa
+
+# GnuPG
+gpg --edit-key fhblf@tutanota.com
+password
+save
+
+# 7zip
+tar -cvf GnuPG-OpenSSH.tar GnuPG-OpenSSH
+7z a -p -mhe=on GnuPG-OpenSSH.tar.7z GnuPG-OpenSSH.tar
+
+¯\_(ツ)_/¯
