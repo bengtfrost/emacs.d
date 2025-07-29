@@ -1,0 +1,32 @@
+npm install -g \
+  typescript-language-server \
+  typescript \
+  vscode-json-languageserver \
+  yaml-language-server \
+  bash-language-server \
+  dprint \
+  @taplo/cli
+
+# update npm packages
+npm update -g
+
+# catt dep. yt-dlp
+pip3 install --user catt 
+pip3 install --user ruff
+pip3 install --user markdown-it-py
+pip3 install --user mdformat
+#pip3 install --user aider-chat
+pip3 install --user 'litellm[proxy]'
+
+# update python packages
+pip3 install --user --upgrade catt ruff markdown-it-py mdformat litellm 
+
+# venv
+mkdir ~/.venv
+python3 -m venv ~/.venv/aider-chat
+python3 -m venv ~/.venv/crawl4ai
+
+source ~/.venv/aider-chat/bin/activate
+source ~/.venv/litellm/bin/crawl4ai
+
+# install pip3 install aider-chat and crawl4ai (without --user option) 
