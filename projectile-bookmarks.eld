@@ -1,1 +1,1 @@
-("~/.code/aichat/" "~/Utveckling/Web3/TON/my_first_contract/" "~/.emacs.d/" "~/.code/book/" "~/.code/aichat-custom/")
+("~/.emacs.d/" "~/.code/zls/" "~/.code/aichat/" "~/Utveckling/Web3/TON/my_first_contract/" "~/.code/book/" "~/.code/aichat-custom/")

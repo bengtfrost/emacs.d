@@ -121,7 +121,7 @@
   :config
   (setq treesit-auto-install 'prompt)
   ;; Only enable for languages where grammar is working
-  (setq treesit-auto-langs '(python typescript javascript json yaml toml bash))
+  (setq treesit-auto-langs '(python typescript javascript json yaml toml bash zig))
   ;; Disable problematic rust grammar
   (add-to-list 'treesit-auto-fallback-alist '(rust-mode . rust-mode))
   (global-treesit-auto-mode))
@@ -140,6 +140,15 @@
   (setq rust-format-on-save t)
   (setq lsp-rust-analyzer-cargo-watch-command "clippy")
   (setq lsp-rust-analyzer-server-display-inlay-hints t))
+
+;; --- Zig ---
+(use-package zig-mode
+  :ensure t
+  :mode "\\.zig\\'"
+  :hook ((zig-mode . lsp-deferred)
+         (zig-mode . (lambda () (setq tab-width 4))))
+  :config
+  (setq zig-format-on-save t))
 
 ;; --- Python ---
 (use-package python-mode
@@ -243,6 +252,21 @@
   (setq geiser-repl-query-on-kill-p nil)
   :hook (scheme-mode . geiser-mode))
 
+;; --- Zig LSP Server Configuration ---
+(with-eval-after-load 'lsp-mode
+  ;; Only register if zls is available
+  (when (executable-find "zls")
+    (lsp-register-client
+     (make-lsp-client
+      :server-id 'zls
+      :major-modes '(zig-mode)
+      :priority 1
+      :activation-fn (lambda (filename _server-id)
+                      (and (derived-mode-p 'zig-mode)
+                           (executable-find "zls")))
+      :new-connection (lsp-stdio-connection '("zls"))
+      :initialization-options (lambda () '())))))
+
 ;; --- Guile LSP Server Configuration ---
 (with-eval-after-load 'lsp-mode
   (add-to-list 'lsp-language-id-configuration '(scheme-mode . "scheme"))
@@ -314,6 +338,8 @@
 
 ;; --- Mode-specific format on save ---
 (add-hook 'rust-mode-hook
+          (lambda () (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
+(add-hook 'zig-mode-hook
           (lambda () (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
 (add-hook 'python-mode-hook
           (lambda () (add-hook 'before-save-hook #'blfdev/format-buffer nil t)))
