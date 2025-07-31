@@ -1,3 +1,4 @@
+;; ~/.emacs.d/lisp/custom.el
 ;; -*- lexical-binding: t; -*-
 
 ;; New, smarter tab command.
@@ -21,3 +22,4 @@ Otherwise, insert spaces according to 'tab-width'."
     (insert-tab))))
 
 (provide 'custom)
+
