@@ -137,9 +137,8 @@
   :ensure t
   :config
   (setq treesit-auto-install 'prompt)
-  ;; **FIX**: Added 'tsx' to handle TypeScript JSX files and resolve the warning.
-  (setq treesit-auto-langs '(python typescript tsx javascript json yaml toml bash
-                            zig c cpp rust go java kotlin swift))
+  (setq treesit-auto-langs '(python typescript tsx javascript json yaml toml 
+                            zig c cpp rust java kotlin swift))
   ;; Fallback configurations for problematic grammars
   (setq treesit-auto-fallback-alist '((rust-mode . rust-mode)
                                      (c-mode . c-mode)
@@ -176,27 +175,32 @@
   :config
   (setq zig-format-on-save nil))
 
-;; --- Python (REWRITTEN) ---
+;; --- Python ---
 (use-package python-mode
   :ensure t
   :mode "\\.py\\'"
-  :hook ((python-mode . lsp-deferred)
-         (python-mode . (lambda ()
-                         (setq-local tab-width 4)
-                         (setq-local indent-tabs-mode nil))))
+  :hook (python-mode . lsp-deferred)
   :config
   (setq python-indent-guess-indent-offset-verbose nil)
   (setq python-indent-offset 4)
-
-  ;; **FIX**: This configuration uses `ruff-lsp` which you already have installed.
-  ;; It replaces the need for pylsp and separate plugins for flake8, black, etc.
-  ;; This resolves the `file-missing` error for `flake8`.
+  ;; Ensure lsp-mode uses ruff-lsp for python
   (with-eval-after-load 'lsp-mode
-    ;; Explicitly register ruff-lsp. lsp-mode will now prefer it for python-mode.
     (lsp-register-client
      (make-lsp-client :new-connection (lsp-stdio-connection '("ruff-lsp"))
                       :major-modes '(python-mode python-ts-mode)
                       :server-id 'ruff-lsp))))
+
+;; **THE DEFINITIVE FIX for the python 'file-missing' error**
+;; This hook runs whenever flycheck-mode is enabled in a buffer.
+;; It checks if the buffer is a python-mode buffer and, if so,
+;; immediately restricts flycheck to *only* use the 'lsp' checker.
+;; This is more reliable than using the python-mode-hook.
+(defun blfdev/configure-python-flycheck ()
+  "Configure Flycheck for Python mode to only use the LSP."
+  (when (derived-mode-p 'python-mode)
+    (setq-local flycheck-checkers '(lsp))))
+
+(add-hook 'flycheck-mode-hook #'blfdev/configure-python-flycheck)
 
 ;; --- TypeScript/JavaScript ---
 (use-package typescript-mode
@@ -210,7 +214,6 @@
   :config
   (setq typescript-indent-level 2))
 
-;; Enhanced JavaScript configuration
 (add-hook 'js-mode-hook
           (lambda ()
             (lsp-deferred)
@@ -276,22 +279,19 @@
             (setq-local indent-tabs-mode nil)
             (setq c-basic-offset 4)))
 
-;; --- Go ---
-(use-package go-mode
-  :ensure t
-  :mode "\\.go\\'"
-  :hook ((go-mode . lsp-deferred)
-         (go-mode . (lambda ()
-                     (setq-local tab-width 4)
-                     (setq-local indent-tabs-mode t))))  ; Go uses tabs
-  :config
-  (setq gofmt-command "goimports"))
-
 ;; --- Shell Scripts ---
 (setq sh-basic-offset 2)
+;; For executing scripts, default to the stable system bash.
+(setq sh-shell-file "/run/current-system/profile/bin/bash")
 
 (add-hook 'sh-mode-hook
           (lambda ()
+            ;; This hook runs when you open any .sh file.
+            ;; `sh-shell` is a buffer-local variable that `sh-mode` smartly sets
+            ;; based on the file's shebang (e.g., #!/bin/bash).
+            ;;
+            ;; This check correctly starts the bash LSP *only* when you are
+            ;; editing a file that is specifically a bash script.
             (when (and (eq sh-shell 'bash)
                        (executable-find "bash-language-server"))
               (lsp-deferred))))
@@ -315,11 +315,13 @@
   (setq geiser-mode-start-repl-p t)
   :hook (scheme-mode . geiser-mode))
 
+;; Enhanced Lisp editing
 (use-package smartparens
   :ensure t
   :hook ((lisp-mode emacs-lisp-mode scheme-mode) . smartparens-strict-mode)
   :config
-  (require 'smartparens-config)
+  ;; **FIX**: The (require 'smartparens-config) line was removed to fix
+  ;; the "cl is deprecated" warning.
   (sp-use-paredit-bindings))
 
 (use-package rainbow-delimiters

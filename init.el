@@ -37,6 +37,13 @@
   (unless (file-exists-p auto-save-dir)
     (make-directory auto-save-dir t)))
 
+;; --- Shell Configuration ---
+;; Tell Emacs exactly which interactive shell to use, preventing version mismatch warnings.
+;; (setq shell-file-name "/home/bfguix/.guix-home/profile/bin/zsh")
+;; **FIX for tree-sitter compilation warnings**
+;; Provide a stable, standard shell for background processes like compilation.
+(setq shell-file-name "/run/current-system/profile/bin/bash")
+
 ;; --- Package Management ---
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
