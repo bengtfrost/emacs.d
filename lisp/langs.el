@@ -137,8 +137,7 @@
   :ensure t
   :config
   (setq treesit-auto-install 'prompt)
-  (setq treesit-auto-langs '(python typescript tsx javascript json yaml toml 
-                            zig c cpp rust))
+  (setq treesit-auto-langs '(python typescript tsx javascript json yaml toml))
   ;; Fallback configurations for problematic grammars
   (setq treesit-auto-fallback-alist '((rust-mode . rust-mode)
                                      (c-mode . c-mode)
