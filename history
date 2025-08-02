@@ -5,7 +5,7 @@
 (setq minibuffer-history '("no" "org"))
 (setq read-number-history '("0"))
 (setq file-name-history '("~/.bashrc" "~/.zshenv" "~/Utveckling/Zig/ZigExamples/data-structures/generic_array.zig" "~/.local/bin/OpenSubtitlesDownload.py" "~/.code/aichat/config.example.yaml" "~/.code/aichat/ *undo-tree*" "~/.code/aichat/config.example.yaml" "~/.config/alacritty.toml" "~/Utveckling/Web3/TON/my_first_contract/scripts/deploy.ts" "~/Utveckling/Web3/TON/my_first_contract/package.json" "~/Utveckling/Web3/TON/my_first_contract/jest.config.js" "~/.emacs.d/lisp/langs.el" "~/.zshenv" "~/.local/bin/OpenSubtitlesDownload.py" "~/.zshenv" "~/.code/aichat/src/cli.rs" "~/.config/alacritty.toml" "~/.code/aichat/config.agent.example.yaml" "~/Utveckling/Web3/TON/my_first_contract/jest.config.js" "~/Utveckling/Web3/TON/my_first_contract/package.json" "~/Utveckling/Web3/TON/my_first_contract/scripts/deploy.ts" "~/Utveckling/Zig/ZigExamples/data-structures/generic_array.zig" "~/Dokument/linux/Guix/i3/extra/emacs-info.md" "~/.emacs.d/lisp/langs.el" "~/.emacs.d/ *undo-tree*"))
-(setq extended-command-history '("package-upgrade" "list-packages" "texi2info" "cd"))
+(setq extended-command-history '("treesit-auto-install-all" "treesit-auto-mode" "list-packages" "package-upgrade" "list-packages" "texi2info" "cd"))
 (setq buffer-name-history '("*Messages*" "*Warnings*" "*Messages*" "*guile-lsp::stderr*" "OpenSubtitlesDownload.py"))
 (setq yes-or-no-p-history '("yes"))
 (setq projectile-project-command-history '#s(hash-table test equal))

@@ -105,7 +105,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(company-box consult-projectile diff-hl doom-modeline doom-themes
+                 embark-consult flycheck geiser-guile general guix
+                 helpful json-mode lsp-ui magit marginalia orderless
+                 python-mode rainbow-delimiters rust-mode smartparens
+                 toml-mode treesit-auto typescript-mode undo-tree
+                 vertico yaml-mode zig-mode)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
