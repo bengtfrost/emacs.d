@@ -1,43 +1,124 @@
-;; -*- lexical-binding: t; -*-
+;;; init.el --- Emacs configuration entry point -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; Main Emacs configuration file that loads modular configuration from lisp/ directory.
+;; Optimized for terminal use with modern completion and development tools.
+
+;;; Code:
+
+;; --- Performance Optimization (Early Init) ---
+;; Increase GC threshold during startup for faster loading
+(let ((normal-gc-cons-threshold (* 20 1024 1024))
+      (init-gc-cons-threshold (* 128 1024 1024)))
+  (setq gc-cons-threshold init-gc-cons-threshold)
+  (add-hook 'emacs-startup-hook
+            (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
 
 ;; --- Backup File Configuration ---
 ;; Stop creating backup~ files in the same directory.
 ;; Instead, put all backup files into a dedicated directory.
 (setq backup-directory-alist `(("." . ,(expand-file-name "backups" user-emacs-directory))))
-(setq make-backup-files t)    ; Ensure backups are on.
-(setq backup-by-copying t)    ; Force copying to the backup dir, good for version control.
-(setq delete-old-versions t)  ; Don't clutter the backup dir with old versions.
-(setq kept-new-versions 6)
-(setq kept-old-versions 2)
-(setq version-control t)      ; Use version numbers for backups.
+(setq make-backup-files t)               ; Ensure backups are on
+(setq backup-by-copying t)               ; Force copying to backup dir, good for version control
+(setq delete-old-versions t)             ; Don't clutter backup dir with old versions
+(setq kept-new-versions 6)               ; Keep 6 new versions
+(setq kept-old-versions 2)               ; Keep 2 old versions
+(setq version-control t)                 ; Use version numbers for backups
+
+;; --- Auto-save Configuration ---
+(setq auto-save-file-name-transforms
+      `((".*" ,(expand-file-name "auto-saves/" user-emacs-directory) t)))
+
+;; Create directories if they don't exist
+(let ((backup-dir (expand-file-name "backups" user-emacs-directory))
+      (auto-save-dir (expand-file-name "auto-saves" user-emacs-directory)))
+  (unless (file-exists-p backup-dir)
+    (make-directory backup-dir t))
+  (unless (file-exists-p auto-save-dir)
+    (make-directory auto-save-dir t)))
 
 ;; --- Package Management ---
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+
+;; Initialize package system
 (package-initialize)
 
+;; Bootstrap use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-(eval-when-compile (require 'use-package))
+
+(eval-when-compile 
+  (require 'use-package))
+
+;; Configure use-package
+(setq use-package-always-ensure t)       ; Always ensure packages are installed
+(setq use-package-expand-minimally t)    ; Minimize expanded code for performance
+(setq use-package-compute-statistics t)  ; Enable statistics for debugging
 
 ;; --- Load Custom Configuration Modules ---
+;; Load in dependency order: functions -> ui -> keybinds -> langs
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
-  (load-file (concat lisp-dir "/ui.el"))
-  (load-file (concat lisp-dir "/custom.el"))
-  (load-file (concat lisp-dir "/keybinds.el"))
-  (load-file (concat lisp-dir "/langs.el")))
+  ;; Ensure directory exists
+  (unless (file-exists-p lisp-dir)
+    (make-directory lisp-dir t))
+  
+  (add-to-list 'load-path lisp-dir)
+  
+  ;; Load each module with error handling
+  (let ((modules '(("functions.el" . "Custom utility functions")
+                   ("ui.el" . "User interface configuration")
+                   ("keybinds.el" . "Key binding setup")
+                   ("langs.el" . "Language-specific configuration"))))
+    (dolist (module modules)
+      (let ((file-path (expand-file-name (car module) lisp-dir))
+            (description (cdr module)))
+        (if (file-exists-p file-path)
+            (condition-case err
+                (progn
+                  (message "Loading %s..." description)
+                  (load-file file-path)
+                  (message "✓ Loaded %s" description))
+              (error
+               (message "✗ Error loading %s: %s" description (error-message-string err))))
+          (message "⚠ Warning: %s not found, skipping..." (car module)))))))
 
-(put 'upcase-region 'disabled nil)
+;; --- Final Configuration ---
+(put 'upcase-region 'disabled nil)       ; Enable upcase-region command
+(put 'downcase-region 'disabled nil)     ; Enable downcase-region command
+(put 'narrow-to-region 'disabled nil)    ; Enable narrow-to-region command
+
+;; --- Custom Variables ---
+;; Keep this section clean - most configuration should be in the modules
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages nil))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; --- Startup Message ---
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs loaded in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+
+;; --- End of Configuration ---
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; End:
+
+;;; init.el ends here

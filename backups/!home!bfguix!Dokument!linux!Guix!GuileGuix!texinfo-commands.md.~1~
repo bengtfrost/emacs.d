@@ -1,0 +1,22 @@
+Here are some of the most useful commands for navigating within Texinfo documents, which are typically viewed using the info reader in a Linux terminal:
+
+These commands allow you to move efficiently through the structured information within an Info document.
+
+* n (Next Node): Moves to the next logical node in the document's sequence. This is useful for reading through a document linearly.  
+* p (Previous Node): Moves to the previous logical node in the document's sequence. This is the counterpart to n.  
+* u (Up Node): Moves up to the parent node in the document's hierarchical structure. This is excellent for navigating out of a specific topic and back to a broader category.  
+* l (Last Node): Jumps back to the node you were just viewing. This is very handy for quickly toggling between two nodes.  
+* **d (Dir Node):** Takes you to the top-level Info directory (\* Dir:). From here, you can see a list of all installed Info manuals.  
+* **h (Help):** Displays a help screen with a list of all available Info commands and their functions.  
+* **s (Search):** Prompts you to enter a string to search for within the current Info file.  
+* **q (Quit):** Exits the Info reader.  
+* **f (Follow Cross-reference):** If your cursor is on a cross-reference (like \*note Some Node::), pressing f will take you to that referenced node.  
+* **m (Menu):** If your cursor is on a menu entry, pressing m will take you to the node pointed to by that menu entry. This is often used interchangeably with f for menu navigation.  
+* **g (Go Node):** Prompts you to enter a node name (e.g., (myprogram)Introduction) and jumps directly to that node if it exists.  
+* **t (Top Node):** Jumps to the very first node (often named Top or (filename)Top) of the current Info file.
+
+**How to use them:**
+
+While inside the info reader, simply press the corresponding key. For commands like s or g, the info reader will prompt you for input at the bottom of the screen.
+
+These commands provide a powerful way to navigate the extensive documentation available in the Info format on Linux systems.
