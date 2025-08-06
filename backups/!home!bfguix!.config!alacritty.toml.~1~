@@ -1,0 +1,64 @@
+# Font configuration
+[font]
+size = 9.0
+
+[font.normal]
+family = "CaskaydiaMono Nerd Font Mono"
+style = "Regular"
+
+[font.bold]
+family = "CaskaydiaMono Nerd Font Mono"
+style = "Bold"
+
+[font.italic]
+family = "CaskaydiaMono Nerd Font Mono"
+style = "Italic"
+
+[font.bold_italic]
+family = "CaskaydiaMono Nerd Font Mono"
+style = "Bold Italic"
+
+# Colors (Adwaita Dark - Softer Contrast)
+[colors.primary]
+background = '#2E2E2E'
+foreground = '#D0D0D0'
+
+[colors.normal]
+black =   '#242424'
+red =     '#c01c28'
+green =   '#2ec27e'
+yellow =  '#f5c211'
+blue =    '#3584e4'
+magenta = '#813d9c'
+cyan =    '#26a269'
+white =   '#dedede'
+
+[colors.bright]
+black =   '#636363'
+red =     '#ff5454'
+green =   '#46e094'
+yellow =  '#ffd324'
+blue =    '#78aeed'
+magenta = '#c061cb'
+cyan =    '#33d17a'
+white =   '#ffffff'
+
+# Keyboard bindings
+[[keyboard.bindings]]
+key = "Return"
+mods = "Control|Shift"
+action = "SpawnNewInstance"
+
+# Hints configuration
+[[hints.enabled]]
+regex = "[^ ]+\\.rs:\\d+:\\d+"
+command = { program = "code", args = ["--goto", "{hint-text}"] }
+mouse = { enabled = true }
+
+# Set the window size
+[window]
+dimensions = { columns = 84, lines = 24 }
+
+[env]
+WINIT_UNIX_BACKEND = "x11" # For X11
+# WINIT_UNIX_BACKEND = "wayland" # For Wayland

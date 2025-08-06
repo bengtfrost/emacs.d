@@ -1,0 +1,94 @@
+,
+}{
+q
+}{
+(lambda (x) (+ x 4))
+}{
+(define (pi-sum a b)
+                       (sum (lambda (x) (/ 1.0 (* x (+ x 2))))
+                            a
+                            (lambda (x) (+ x 4))
+                            b))
+}{
+(pi-sum 1 1)
+}{
+,backtrace
+}{
+(+ (let ((x 3))
+                          (+ x (* x 10)))
+                        x)
+}{
+,bt
+}{
+backtrace
+}{
+(pi-sum 1+ 1)
+}{
+(+ (let ((x 3))
+                          (+ x (* x 10)))
+                        5)
+}{
+(let ((x 3)
+                           (y (+ x 2)))
+                       (* x y))
+}{
+(let ((x 3)
+                           (y (+ x 2)))
+                       (* x y)
+                       5)
+}{
+(let ((x 3)
+                           (y (+ x 2)))
+                       (* x y)
+                       (+ 2))
+}{
+(let ((x 3)
+                           (y (+ x 2)))
+                       (* x .crawl4ai/))
+}{
+(let ((x 3)
+                           (y (+ x 2)))
+                       (* 3 4))
+}{
+(let ((x 3)
+                           (y (+ 2 2))
+                           (* x y)))
+}{
+(/ 4 6)
+}{
+(/ 6 4)
+}{
+$3
+}{
+(define foo)
+}{
+(define foo "quack")
+}{
+(define bar "quack")
+}{
+(eq? foo bar)
+}{
+(define foo 'quack)
+}{
+(define bar 'quack)
+}{
+(eq? foo bar)
+}{
+(symbol foo)
+}{
+(symbol? foo)
+}{
+(number? foo)
+}{
+(define (foo x) x)
+}{
+,backtrace (foo 4)
+}{
+(define foo '(1 2 3))
+}{
+(define bar '(1 2 3))
+}{
+(eq? foo bar)
+}{
+(equal? foo bar)
+}{
