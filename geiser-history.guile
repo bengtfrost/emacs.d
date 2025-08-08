@@ -92,3 +92,21 @@ $3
 }{
 (equal? foo bar)
 }{
+(display "Hello world!\n")
+}{
+,help geiser
+}{
+,apropos
+}{
+,apropos geiser
+}{
+,apropos system
+}{
+,help geiser
+}{
+,binding
+}{
+,help
+}{
+.quit
+}{
