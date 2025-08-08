@@ -304,11 +304,16 @@
   :config
   (setq geiser-guile-binary "guile"))
 
+(use-package geiser-racket
+  :ensure t
+  :config
+  (setq geiser-racket-binary "racket"))
+
 (use-package geiser
   :ensure t
-  :after geiser-guile
+  :after (geiser-guile geiser-racket)
   :config
-  (setq geiser-active-implementations '(guile))
+  (setq geiser-active-implementations '(guile racket))
   (setq geiser-repl-history-filename "~/.emacs.d/geiser-history")
   (setq geiser-repl-query-on-kill-p nil)
   (setq geiser-mode-start-repl-p t)

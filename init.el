@@ -58,7 +58,7 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-(eval-when-compile 
+(eval-when-compile
   (require 'use-package))
 
 ;; Configure use-package
@@ -72,9 +72,9 @@
   ;; Ensure directory exists
   (unless (file-exists-p lisp-dir)
     (make-directory lisp-dir t))
-  
+
   (add-to-list 'load-path lisp-dir)
-  
+
   ;; Load each module with error handling
   (let ((modules '(("functions.el" . "Custom utility functions")
                    ("ui.el" . "User interface configuration")
@@ -105,13 +105,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(company-box consult-projectile diff-hl doom-modeline doom-themes
-                 embark-consult flycheck geiser-guile general guix
-                 helpful json-mode lsp-ui magit marginalia orderless
-                 python-mode rainbow-delimiters rust-mode smartparens
-                 toml-mode treesit-auto typescript-mode undo-tree
-                 vertico yaml-mode zig-mode)))
+ '(package-selected-packages nil))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
