@@ -78,8 +78,8 @@
   (marginalia-mode)
   :config
   (setq marginalia-annotators '(marginalia-annotators-heavy
-                               marginalia-annotators-light
-                               nil)))
+                                marginalia-annotators-light
+                                nil)))
 
 (use-package savehist
   :init

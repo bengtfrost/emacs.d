@@ -1,4 +1,4 @@
-;; -*- lexical-binding: t; -*-
+;;; Commentary: customizations
 
 ;; Enhanced smart tab command that handles multiple scenarios
 (defun blfdev/smart-tab ()
@@ -99,10 +99,10 @@ Priority: LSP formatter > language-specific formatter > basic indentation."
   (cond
    ((executable-find "ruff")
     (shell-command-on-region (point-min) (point-max) 
-                            "ruff format --stdin-filename=buffer.py" t t))
+                             "ruff format --stdin-filename=buffer.py" t t))
    ((executable-find "black")
     (shell-command-on-region (point-min) (point-max) 
-                            "black --quiet -" t t))
+                             "black --quiet -" t t))
    (t (indent-region (point-min) (point-max)))))
 
 (defun blfdev/format-web-buffer ()
@@ -116,9 +116,9 @@ Priority: LSP formatter > language-specific formatter > basic indentation."
                      ((derived-mode-p 'yaml-mode) "yaml")
                      (t "js"))))
       (shell-command-on-region (point-min) (point-max) 
-                              (format "prettier --parser %s" 
-                                      (if (string= file-ext "ts") "typescript" file-ext))
-                              t t)))
+                               (format "prettier --parser %s" 
+                                       (if (string= file-ext "ts") "typescript" file-ext))
+                               t t)))
    ((executable-find "dprint")
     (shell-command-on-region (point-min) (point-max) "dprint fmt --stdin" t t))
    (t (indent-region (point-min) (point-max)))))
