@@ -1,4 +1,4 @@
-;;; Commentary: customizations
+;;; functions.el --- customizations -*- lexical-binding: t; -*-
 
 ;; Enhanced smart tab command that handles multiple scenarios
 (defun blfdev/smart-tab ()
