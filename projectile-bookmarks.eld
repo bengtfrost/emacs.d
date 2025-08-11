@@ -1,1 +1,1 @@
-("~/.emacs.d/" "~/Downloads/akku-v1.1.0/" "~/Utveckling/LiSP-2ndEdition-2006Dec11/" "~/.code/aichat/" "~/Utveckling/Web3/TON/my_first_contract/" "~/.code/zls/" "~/.code/book/" "~/.code/aichat-custom/")
+("~/.code/dwm/" "~/.emacs.d/" "~/Downloads/akku-v1.1.0/" "~/Utveckling/LiSP-2ndEdition-2006Dec11/" "~/.code/aichat/" "~/Utveckling/Web3/TON/my_first_contract/" "~/.code/zls/" "~/.code/book/" "~/.code/aichat-custom/")

@@ -1,0 +1,11 @@
+# Ignore everything in the repository
+*
+
+# Except for the init.el file
+!/init.el
+
+# And the lisp directory
+!/lisp/
+
+# And the .gitignore file itself
+!/.gitignore

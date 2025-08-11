@@ -42,7 +42,7 @@
 ;; (setq shell-file-name "/home/bfguix/.guix-home/profile/bin/zsh")
 ;; **FIX for tree-sitter compilation warnings**
 ;; Provide a stable, standard shell for background processes like compilation.
-(setq shell-file-name "/run/current-system/profile/bin/bash")
+(setq shell-file-name "/bin/bash")
 
 ;; --- Package Management ---
 (require 'package)

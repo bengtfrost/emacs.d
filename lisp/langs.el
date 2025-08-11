@@ -281,7 +281,7 @@
 ;; --- Shell Scripts ---
 (setq sh-basic-offset 2)
 ;; For executing scripts, default to the stable system bash.
-(setq sh-shell-file "/run/current-system/profile/bin/bash")
+(setq sh-shell-file "/bin/bash")
 
 (add-hook 'sh-mode-hook
           (lambda ()
