@@ -103,10 +103,10 @@
   (setq company-require-match nil)       ; Allow non-matching input
   (setq company-dabbrev-downcase nil)    ; Don't downcase completions
   (setq company-backends '(company-capf
-                           company-files
-                           company-keywords
-                           company-dabbrev-code
-                           company-dabbrev))
+                          company-files
+                          company-keywords
+                          company-dabbrev-code
+                          company-dabbrev))
 
   :bind (:map company-active-map
               ("<tab>" . company-complete-common-or-cycle)
@@ -140,8 +140,8 @@
   (setq treesit-auto-langs '(python typescript tsx javascript json yaml toml))
   ;; Fallback configurations for problematic grammars
   (setq treesit-auto-fallback-alist '((rust-mode . rust-mode)
-                                      (c-mode . c-mode)
-                                      (cpp-mode . c++-mode)))
+                                     (c-mode . c-mode)
+                                     (cpp-mode . c++-mode)))
   (global-treesit-auto-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -154,8 +154,10 @@
   :mode "\\.rs\\'"
   :hook ((rust-mode . lsp-deferred)
          (rust-mode . (lambda ()
-                        (setq-local tab-width 4)
-                        (setq-local indent-tabs-mode nil))))
+                       (setq-local tab-width 4)
+                       (setq-local indent-tabs-mode nil)
+                       ;; Disable rust flycheck checker, use LSP diagnostics only
+                       (setq-local flycheck-checkers '(lsp)))))
   :config
   (setq rust-format-on-save nil)  ; We'll handle formatting manually
   (setq lsp-rust-analyzer-cargo-watch-command "clippy")
@@ -169,8 +171,8 @@
   :mode "\\.zig\\'"
   :hook ((zig-mode . lsp-deferred)
          (zig-mode . (lambda ()
-                       (setq-local tab-width 4)
-                       (setq-local indent-tabs-mode nil))))
+                      (setq-local tab-width 4)
+                      (setq-local indent-tabs-mode nil))))
   :config
   (setq zig-format-on-save nil))
 
@@ -182,14 +184,14 @@
   :config
   (setq python-indent-guess-indent-offset-verbose nil)
   (setq python-indent-offset 4)
-  ;; Ensure lsp-mode uses ruff server for python
+  ;; Ensure lsp-mode uses ruff-lsp for python
   (with-eval-after-load 'lsp-mode
     (lsp-register-client
-     (make-lsp-client
-      :new-connection (lsp-stdio-connection '("ruff" "server" "--preview"))
-      :major-modes '(python-mode python-ts-mode)
-      :server-id 'ruff)))) ; Use 'ruff as the server ID)
+     (make-lsp-client :new-connection (lsp-stdio-connection '("ruff-lsp"))
+                      :major-modes '(python-mode python-ts-mode)
+                      :server-id 'ruff-lsp))))
 
+;; **THE DEFINITIVE FIX for the python 'file-missing' error**
 ;; This hook runs whenever flycheck-mode is enabled in a buffer.
 ;; It checks if the buffer is a python-mode buffer and, if so,
 ;; immediately restricts flycheck to *only* use the 'lsp' checker.
@@ -208,8 +210,8 @@
          ("\\.tsx\\'" . typescript-mode))
   :hook ((typescript-mode . lsp-deferred)
          (typescript-mode . (lambda ()
-                              (setq-local tab-width 2)
-                              (setq-local indent-tabs-mode nil))))
+                             (setq-local tab-width 2)
+                             (setq-local indent-tabs-mode nil))))
   :config
   (setq typescript-indent-level 2))
 
@@ -226,8 +228,8 @@
   :mode "\\.json\\'"
   :hook ((json-mode . lsp-deferred)
          (json-mode . (lambda ()
-                        (setq-local tab-width 2)
-                        (setq-local indent-tabs-mode nil))))
+                       (setq-local tab-width 2)
+                       (setq-local indent-tabs-mode nil))))
   :config
   (setq json-reformat:indent-width 2))
 
@@ -237,8 +239,8 @@
   :mode "\\.ya?ml\\'"
   :hook ((yaml-mode . lsp-deferred)
          (yaml-mode . (lambda ()
-                        (setq-local tab-width 2)
-                        (setq-local indent-tabs-mode nil))))
+                       (setq-local tab-width 2)
+                       (setq-local indent-tabs-mode nil))))
   :config
   (setq yaml-indent-offset 2))
 
@@ -247,8 +249,8 @@
   :ensure t
   :mode "\\.toml\\'"
   :hook (toml-mode . (lambda ()
-                       (when (executable-find "taplo")
-                         (lsp-deferred)))))
+                      (when (executable-find "taplo")
+                        (lsp-deferred)))))
 
 ;; --- Markdown ---
 (use-package markdown-mode
@@ -256,8 +258,8 @@
   :mode (("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :hook (markdown-mode . (lambda ()
-                           (when (executable-find "marksman")
-                             (lsp-deferred))))
+                          (when (executable-find "marksman")
+                            (lsp-deferred))))
   :config
   (setq markdown-command "markdown")
   (setq markdown-fontify-code-blocks-natively t)
@@ -281,7 +283,7 @@
 ;; --- Shell Scripts ---
 (setq sh-basic-offset 2)
 ;; For executing scripts, default to the stable system bash.
-(setq sh-shell-file "/bin/bash")
+(setq sh-shell-file "/run/current-system/profile/bin/bash")
 
 (add-hook 'sh-mode-hook
           (lambda ()
@@ -345,8 +347,8 @@
       :major-modes '(zig-mode)
       :priority 1
       :activation-fn (lambda (filename _server-id)
-                       (and (derived-mode-p 'zig-mode)
-                            (executable-find "zls")))
+                      (and (derived-mode-p 'zig-mode)
+                           (executable-find "zls")))
       :new-connection (lsp-stdio-connection '("zls"))
       :initialization-options (lambda () '()))))
 
@@ -359,8 +361,8 @@
       :major-modes '(scheme-mode)
       :priority 1
       :activation-fn (lambda (filename _server-id)
-                       (and (derived-mode-p 'scheme-mode)
-                            (executable-find "guile-lsp-server")))
+                      (and (derived-mode-p 'scheme-mode)
+                           (executable-find "guile-lsp-server")))
       :new-connection (lsp-stdio-connection '("guile-lsp-server"))
       :initialization-options (lambda () '())))))
 
